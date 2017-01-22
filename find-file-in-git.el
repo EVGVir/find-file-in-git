@@ -5,7 +5,7 @@ FILE-NAME - the search criteria: a part of the file name.
 
 If only one file meets the criteria, it will be opened. If there
 are several such files, a list with them will be displayed."
-  (interactive "MFind file: ")
+  (interactive (find-file-in-git/prompt-file-name-at-point "Find file"))
   (let ((git-root (find-file-in-git/get-git-root default-directory))
         files-buf num-of-files)
     (set 'files-buf (find-file-in-git/find file-name git-root))
@@ -46,3 +46,29 @@ that contains '.git' directory) the directory DIR belongs to."
   (if (file-exists-p (expand-file-name ".git" dir))
       dir
     (find-file-in-git/get-git-root (expand-file-name "../" dir))))
+
+
+(defun find-file-in-git/prompt-file-name-at-point (prompt)
+  "Extracts a short file name from a context.
+
+This function must be used by interactive functions.
+
+PROMPT is a string to prompt with. It is shown to the user before
+the input field in the minibuffer."
+  (let ((template "[^A-aZ-z0-9_.-]")
+        start end file-name)
+    (save-excursion
+      (if (re-search-backward template nil t)
+          (forward-char)
+        (goto-char (point-min)))
+      (set 'start (point))
+      (if (re-search-forward template nil t)
+          (backward-char)
+        (goto-char (point-max)))
+      (set 'end (point)))
+    (set 'file-name (buffer-substring start end))
+    (set 'prompt (concat prompt
+                         (unless (string= file-name "")
+                           (concat " (" file-name ")"))
+                         ": "))
+    (list (completing-read prompt nil nil nil nil nil file-name))))
