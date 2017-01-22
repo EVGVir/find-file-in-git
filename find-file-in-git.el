@@ -3,12 +3,25 @@
 
 FILE-NAME - the search criteria: a part of the file name.
 
-A list with files that met criteria is displayed."
+If only one file meets the criteria, it will be opened. If there
+are several such files, a list with them will be displayed."
   (interactive "MFind file: ")
   (let ((git-root (find-file-in-git/get-git-root default-directory))
-        files-buf)
+        files-buf num-of-files)
     (set 'files-buf (find-file-in-git/find file-name git-root))
-    (set-window-buffer (selected-window) files-buf)))
+    (set-buffer files-buf)
+    (set 'num-of-files (count-lines (point-min) (point-max)))
+    (cond
+     ((= num-of-files 1)
+      (find-file (buffer-substring (point-min) (- (point-max) 1)))
+      (kill-buffer files-buf))
+     ((> num-of-files 1)
+      (set-window-buffer (selected-window) files-buf)
+      (goto-char (point-min)))
+     ((= num-of-files 0)
+      (kill-buffer files-buf)
+      (message "The file \"%s\" was not found in the \"%s\" repository."
+               file-name git-root)))))
 
 
 (defun find-file-in-git/find (file-name git-root)
