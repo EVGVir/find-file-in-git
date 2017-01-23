@@ -98,3 +98,6 @@ from the buffer local variable `default-directory`."
   :tag "Find File in Git Key Binding"
   :type 'key-sequence
   :set 'find-file-in-git/set-customization)
+
+
+(provide 'find-file-in-git)
