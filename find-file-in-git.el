@@ -72,3 +72,29 @@ the input field in the minibuffer."
                            (concat " (" file-name ")"))
                          ": "))
     (list (completing-read prompt nil nil nil nil nil file-name))))
+
+
+;; Customization
+(defun find-file-in-git/set-customization (option value)
+  "Customizes find-file-in-git package behaviour.
+
+OPTION - the name of an option (a symbol) that was changed by
+  means of the customization interface.
+VALUE - the value to be set for this option."
+  (cond
+   ((eq option 'find-file-in-git/key-binding/find)
+    (if (boundp 'find-file-in-git/key-binding/find)
+        (define-key global-map find-file-in-git/key-binding/find nil))
+    (set 'find-file-in-git/key-binding/find value)
+    (define-key global-map find-file-in-git/key-binding/find 'find-file-in-git))))
+
+
+(defcustom find-file-in-git/key-binding/find "\C-x\M-a"
+  "Key sequence that is used to find a file in the current git
+repository (executes function `find-file-in-git`).
+
+The current repository is the one that contains the directory
+from the buffer local variable `default-directory`."
+  :tag "Find File in Git Key Binding"
+  :type 'key-sequence
+  :set 'find-file-in-git/set-customization)
