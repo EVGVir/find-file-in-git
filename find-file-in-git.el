@@ -32,11 +32,9 @@ are several such files, a list with them will be displayed."
 with the root directory in GIT-ROOT.
 
 Returns a buffer with a list of files."
-  (let ((files-buf (get-buffer-create "find-file-in-git: Files")))
+  (let ((files-buf (find-file-in-git/get-buffer)))
     (save-excursion
       (set-buffer files-buf)
-      (setq-local buffer-read-only nil)
-      (erase-buffer)
       (set 'default-directory git-root)
       (process-file "git" nil files-buf nil
                     "ls-files"
@@ -93,6 +91,24 @@ must contain only one file name and the name only."
                             'action (lambda (button) (find-file-other-window (button-get button 'file-name)))
                             'follow-link t)
           (= (forward-line) 0))))) ; Emulates repeate-until behaviour.
+
+
+(defun find-file-in-git/get-buffer ()
+    "Returns a buffer with name 'find-file-in-git: Files'. If the
+buffer is already created its content is erased. The returned
+buffer is ready to be updated (its read-only property is lifted).
+
+The buffer has its local key binding:
+  n - goto next line;
+  p - goto previous line."
+  (let ((files-buf (get-buffer-create "find-file-in-git: Files")))
+    (save-excursion
+      (set-buffer files-buf)
+      (setq-local buffer-read-only nil)
+      (erase-buffer)
+      (local-set-key "n" 'next-line)
+      (local-set-key "p" 'previous-line))
+    files-buf))
 
 
 ;; Customization
