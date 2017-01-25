@@ -16,6 +16,8 @@ are several such files, a list with them will be displayed."
       (find-file (buffer-substring (point-min) (- (point-max) 1)))
       (kill-buffer files-buf))
      ((> num-of-files 1)
+      (set-buffer-modified-p nil)
+      (setq-local buffer-read-only t)
       (set-window-buffer (selected-window) files-buf)
       (goto-char (point-min)))
      ((= num-of-files 0)
@@ -28,10 +30,11 @@ are several such files, a list with them will be displayed."
   "Looks for a file with name FILE-NAME in the Git repository
 with the root directory in GIT-ROOT.
 
-Returns a buffer with list of files."
+Returns a buffer with a list of files."
   (let ((files-buf (get-buffer-create "find-file-in-git: Files")))
     (save-excursion
       (set-buffer files-buf)
+      (setq-local buffer-read-only nil)
       (erase-buffer)
       (set 'default-directory git-root)
       (process-file "git" nil files-buf nil
