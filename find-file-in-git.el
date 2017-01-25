@@ -34,7 +34,7 @@ Returns a buffer with list of files."
       (set-buffer files-buf)
       (erase-buffer)
       (set 'default-directory git-root)
-      (call-process "git" nil files-buf nil
+      (process-file "git" nil files-buf nil
                     "ls-files"
                     (concat "*" file-name "*")))
     files-buf))
