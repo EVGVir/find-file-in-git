@@ -16,6 +16,7 @@ are several such files, a list with them will be displayed."
       (find-file (buffer-substring (point-min) (- (point-max) 1)))
       (kill-buffer files-buf))
      ((> num-of-files 1)
+      (find-file-in-git/insert-buttons files-buf)
       (set-buffer-modified-p nil)
       (setq-local buffer-read-only t)
       (set-window-buffer (selected-window) files-buf)
@@ -75,6 +76,23 @@ the input field in the minibuffer."
                            (concat " (" file-name ")"))
                          ": "))
     (list (completing-read prompt nil nil nil nil nil file-name))))
+
+
+(defun find-file-in-git/insert-buttons (buffer)
+  "Substitutes file names with buttons that open those files.
+BUFFER - a buffer with a list of full file names. A buffer's line
+must contain only one file name and the name only."
+  (save-excursion
+    (set-buffer buffer)
+    (goto-char (point-min))
+    (while
+        (let ((begin (line-beginning-position))
+              (end   (line-end-position)))
+          (make-text-button begin end
+                            'file-name (buffer-substring begin end)
+                            'action (lambda (button) (find-file-other-window (button-get button 'file-name)))
+                            'follow-link t)
+          (= (forward-line) 0))))) ; Emulates repeate-until behaviour.
 
 
 ;; Customization
