@@ -126,6 +126,11 @@ VALUE - the value to be set for this option."
     (define-key global-map find-file-in-git/key-binding/find 'find-file-in-git))))
 
 
+(defgroup find-file-in-git nil
+  "Finding files in a git repository."
+  :group 'files)
+
+
 (defcustom find-file-in-git/key-binding/find "\C-x\M-a"
   "Key sequence that is used to find a file in the current git
 repository (executes function `find-file-in-git`).
@@ -133,6 +138,7 @@ repository (executes function `find-file-in-git`).
 The current repository is the one that contains the directory
 from the buffer local variable `default-directory`."
   :tag "Find File in Git Key Binding"
+  :group 'find-file-in-git
   :type 'key-sequence
   :set 'find-file-in-git/set-customization)
 
